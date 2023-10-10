@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { getPosts, Post } from '../api'
 import { Link, NavLink } from 'react-router-dom'
+
+import { getPosts, Post } from '../api'
 
 const Root = () => {
 

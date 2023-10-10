@@ -12,6 +12,10 @@ export const getPosts = async (signal: AbortSignal): Promise<Post[]> =>
   client.get<Post[]>('/posts', { signal })
     .then((response) => response.data)
 
+export const getPost = async (signal: AbortSignal, id: number): Promise<Post> =>
+  client.get<Post>(`/posts/${id}`, { signal })
+    .then((response) => response.data)
+
 export const getComments = async (signal: AbortSignal, postId: number): Promise<Comment[]> =>
   client.get<Comment[]>(`/comments`, { signal, params: { postId } })
     .then((response) => response.data)
