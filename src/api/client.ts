@@ -8,14 +8,14 @@ const client = axios.create({
   baseURL: BASE_URL
 })
 
-export const getPosts = async (signal: AbortSignal): Promise<Post[]> =>
-  client.get<Post[]>('/posts', { signal })
+export const getPosts = async (): Promise<Post[]> =>
+  client.get<Post[]>('/posts')
     .then((response) => response.data)
 
-export const getPost = async (signal: AbortSignal, id: number): Promise<Post> =>
-  client.get<Post>(`/posts/${id}`, { signal })
+export const getPost = async (id: number): Promise<Post> =>
+  client.get<Post>(`/posts/${id}`)
     .then((response) => response.data)
 
-export const getComments = async (signal: AbortSignal, postId: number): Promise<Comment[]> =>
-  client.get<Comment[]>(`/comments`, { signal, params: { postId } })
+export const getComments = async (postId: number): Promise<Comment[]> =>
+  client.get<Comment[]>(`/comments`, { params: { postId } })
     .then((response) => response.data)

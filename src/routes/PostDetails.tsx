@@ -1,29 +1,45 @@
-import { useEffect, useState } from 'react'
-import { NavLink, useParams } from 'react-router-dom'
+import {
+  ActionFunctionArgs,
+  NavLink,
+  ParamParseKey,
+  Params,
+  useLoaderData,
+  useParams
+} from 'react-router-dom'
 
-import { getComments, Comment, Post, getPost } from '../api'
+import { Post, getPost, getComments, Comment } from '../api'
 
-type Params = {
+type Parameters = {
   postId: string
 }
 
+const PathNames = {
+  postDetail: '/posts/:postId'
+} as const
+
+interface Args extends ActionFunctionArgs {
+  params: Params<ParamParseKey<typeof PathNames.postDetail>>;
+}
+
+type API_DATA = {
+  post: Post,
+  comments: Comment[]
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const loader = async ({ params }: Args) => {
+  const post = await getPost(Number(params.postId)).then((response) => response)
+  const comments = await getComments(Number(params.postId)).then((response) => response)
+  return { post, comments }
+}
+
 const PostDetails = () => {
-  const { postId } = useParams<Params>()
-  const [post, setPost] = useState<Post>()
-  const [comments, setComments] = useState<Comment[]>()
+  const { postId } = useParams<Parameters>()
+  const { post, comments } = useLoaderData() as API_DATA
 
-  useEffect(() => {
-    const controller = new AbortController()
-    const { signal } = controller
-
-    // if (postId !== undefined && Number.isFinite(postId) && Number.isInteger(+postId))
-    getComments(signal, +postId).then((response) => setComments(response))
-    getPost(signal, +postId).then((response) => setPost(response))
-
-    return () => {
-      controller.abort()
-    }
-  }, [postId])
+  if (postId !== undefined) {
+    getPost(+postId).then((response) => response)
+  }
 
   return (
     <>
@@ -43,7 +59,7 @@ const PostDetails = () => {
         <div>
           <h3>Comments:</h3>
           <ul>
-            {comments?.map((comment) => (
+            {comments?.map((comment: Comment) => (
               <li key={comment.id}>
                 <h2>{comment.name}</h2>
 

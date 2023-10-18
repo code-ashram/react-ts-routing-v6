@@ -1,22 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLoaderData } from 'react-router-dom'
 
 import { getPosts, Post } from '../api'
 
+// eslint-disable-next-line react-refresh/only-export-components
+export const loader = async () => await getPosts().then((response) => response)
+
 const Root = () => {
 
-  const [posts, setPosts] = useState<Post[]>()
-
-  useEffect(() => {
-    const controller = new AbortController()
-    const { signal } = controller
-
-    getPosts(signal).then((response) => setPosts(response))
-
-    return () => {
-      controller.abort()
-    }
-  }, [])
+  const posts = useLoaderData() as Post[]
 
   return (
     <>
