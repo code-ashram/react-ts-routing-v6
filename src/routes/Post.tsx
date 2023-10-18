@@ -14,8 +14,7 @@ const Post = () => {
     const controller = new AbortController()
     const { signal } = controller
 
-    if (postId !== undefined && Number.isFinite(postId) && Number.isInteger(+postId))
-      getComments(signal, +postId).then((response) => setComments(response))
+    postId && getComments(signal, +postId).then((response) => setComments(response))
 
     return () => {
       controller.abort()
