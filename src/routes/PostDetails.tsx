@@ -21,21 +21,24 @@ interface Args extends ActionFunctionArgs {
   params: Params<ParamParseKey<typeof PathNames.postDetail>>;
 }
 
-type API_DATA = {
+type LoaderResponse = {
   post: Post,
   comments: Comment[]
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const loader = async ({ params }: Args) => {
-  const post = await getPost(Number(params.postId)).then((response) => response)
-  const comments = await getComments(Number(params.postId)).then((response) => response)
+export const loader = async ({ params }: Args): Promise<LoaderResponse> => {
+  const [post, comments] = await Promise.all([
+    getPost(Number(params.postId)),
+    getComments(Number(params.postId))
+  ])
+
   return { post, comments }
 }
 
 const PostDetails = () => {
   const { postId } = useParams<Parameters>()
-  const { post, comments } = useLoaderData() as API_DATA
+  const { post, comments } = useLoaderData() as LoaderResponse
 
   if (postId !== undefined) {
     getPost(+postId).then((response) => response)
@@ -62,9 +65,7 @@ const PostDetails = () => {
             {comments?.map((comment: Comment) => (
               <li key={comment.id}>
                 <h2>{comment.name}</h2>
-
                 <p>{comment.email}</p>
-
                 <p>{comment.body}</p>
               </li>
             ))}
